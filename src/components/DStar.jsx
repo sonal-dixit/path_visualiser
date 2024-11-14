@@ -3,7 +3,7 @@ import PriorityQueue from "js-priority-queue";
 // Heuristic function for D* Lite (Manhattan distance)
 const heuristic = (a, b) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
 
-const dStarLitePathFinding = ({
+const dStarLitePathFinding = async ({
   startPoint,
   goalPoint,
   gridSize,
@@ -13,8 +13,10 @@ const dStarLitePathFinding = ({
   setIsRunning,
   directions,
   obstaclePositions,
-  speed
+  speed,
+  setTimeTaken,
 }) => {
+  const startTime = Date.now();
   const openSetQueue = new PriorityQueue({ comparator: (a, b) => a.f - b.f });
   openSetQueue.queue({
     pos: startPoint,
@@ -116,7 +118,8 @@ const dStarLitePathFinding = ({
     }
   };
 
-  computePath();
+  await computePath();
+  setTimeTaken(Date.now() - startTime);
 };
 
 export default dStarLitePathFinding;
