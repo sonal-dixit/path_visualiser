@@ -8,6 +8,7 @@ import dfsPathfinding from "./DFS";
 import bfsPathfinding from "./BFS";
 import bellmanFordPathfinding from "./BellmanFord";
 import dStarLitePathfinding from "./DStar";
+import hybridPathfinding from "./hybrid";
 
 const gridSize = 30;
 const cellSize = 1;
@@ -107,22 +108,24 @@ const PathVisualizer = () => {
           BFS
         </button>
         <button
-  className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
-    selectedAlgorithm === "D* Lite" ? "bg-green-700" : ""
-  }`}
-  onClick={() => setSelectedAlgorithm("D* Lite")}
->
-  D* Lite
-</button>
-
+          className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
+            selectedAlgorithm === "D* Lite" ? "bg-green-700" : ""
+          }`}
+          onClick={() => setSelectedAlgorithm("D* Lite")}
+        >
+          D* Lite
+        </button>
         <button
           className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
-            selectedAlgorithm === "Optimized Algorithm" ? "bg-green-700" : ""
+            selectedAlgorithm === "hybrid" ? "bg-green-700" : ""
           }`}
-          onClick={() => setSelectedAlgorithm("Optimized Algorithm")}
+          onClick={() => setSelectedAlgorithm("hybrid")}
         >
-          Optimized Algorithm
+          Optimised Algorithm
         </button>
+        
+
+        
       </div>
       <div
         style={{
@@ -189,6 +192,8 @@ const PathVisualizer = () => {
       bellmanFordPathfinding(algorithmParameters);
     } else if (selectedAlgorithm === "D* Lite") {
       dStarLitePathfinding(algorithmParameters);
+    } else if (selectedAlgorithm === "hybrid") {
+      hybridPathfinding(algorithmParameters);
     }
     
   }}
