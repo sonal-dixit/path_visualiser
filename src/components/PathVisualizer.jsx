@@ -111,13 +111,13 @@ const PathVisualizer = () => {
           BFS
         </button>
         <button
-  className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
-    selectedAlgorithm === "D* Lite" ? "bg-green-700" : ""
-  }`}
-  onClick={() => setSelectedAlgorithm("D* Lite")}
->
-  D* Lite
-</button>
+          className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
+            selectedAlgorithm === "D* Lite" ? "bg-green-700" : ""
+          }`}
+          onClick={() => setSelectedAlgorithm("D* Lite")}
+        >
+          D* Lite
+        </button>
 
         <button
           className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
@@ -163,43 +163,42 @@ const PathVisualizer = () => {
           Add Obstacles
         </button>
         <button
-  className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded m-2"
-  onClick={() => {
-    setIsRunning(true);
-    const algorithmParameters = {
-      startPoint,
-      goalPoint,
-      gridSize,
-      setPath,
-      setVisitedCells,
-      isSearching,
-      isRunning,
-      setIsRunning,
-      directions,
-      obstaclePositions,
-      speed,
+          className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded m-2"
+          onClick={() => {
+            setIsRunning(true);
+            const algorithmParameters = {
+              startPoint,
+              goalPoint,
+              gridSize,
+              setPath,
+              setVisitedCells,
+              isSearching,
+              isRunning,
+              setIsRunning,
+              directions,
+              obstaclePositions,
+              speed,
               setTimeTaken,
-    };
+            };
 
-    // Check the selectedAlgorithm state instead of setSelectedAlgorithm function
-    if (selectedAlgorithm === "A*") {
-      aStarPathfinding(algorithmParameters);
-    } else if (selectedAlgorithm === "Dijkstras") {
-      dijkstraPathfinding(algorithmParameters);
-    } else if (selectedAlgorithm === "BFS") {
-      bfsPathfinding(algorithmParameters);
-    } else if (selectedAlgorithm === "DFS") {
-      dfsPathfinding(algorithmParameters);
-    } else if (selectedAlgorithm === "Bellman-Ford") {
-      bellmanFordPathfinding(algorithmParameters);
-    } else if (selectedAlgorithm === "D* Lite") {
-      dStarLitePathfinding(algorithmParameters);
-    }
-    
-  }}
->
-  Play
-</button>
+            // Check the selectedAlgorithm state instead of setSelectedAlgorithm function
+            if (selectedAlgorithm === "A*") {
+              aStarPathfinding(algorithmParameters);
+            } else if (selectedAlgorithm === "Dijkstras") {
+              dijkstraPathfinding(algorithmParameters);
+            } else if (selectedAlgorithm === "BFS") {
+              bfsPathfinding(algorithmParameters);
+            } else if (selectedAlgorithm === "DFS") {
+              dfsPathfinding(algorithmParameters);
+            } else if (selectedAlgorithm === "Bellman-Ford") {
+              bellmanFordPathfinding(algorithmParameters);
+            } else if (selectedAlgorithm === "D* Lite") {
+              dStarLitePathfinding(algorithmParameters);
+            }
+          }}
+        >
+          Play
+        </button>
 
         <button
           className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded m-2"
@@ -231,10 +230,7 @@ const PathVisualizer = () => {
           No. of nodes visited:{" "}
           {visitedCells?.length != null ? visitedCells?.length : 0}
         </span>
-        <span>
-          Path Length:{" "}
-          {path?.length != null ? path?.length : 0}
-        </span>
+        <span>Path Length: {path?.length != null ? path?.length : 0}</span>
         <span>Time taken: {timeTaken} ms</span>
       </div>
       <Canvas camera={{ position: [0, 5, 10], fov: 70 }}>
