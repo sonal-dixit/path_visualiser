@@ -17,12 +17,14 @@ const PathVisualizer = () => {
   const [path, setPath] = useState([]);
   const [visitedCells, setVisitedCells] = useState([]);
   const [obstaclePositions, setObstaclePositions] = useState(new Set());
+  const [obstacleCount, setObstacleCount] = useState(0);
   const [startPoint, setStartPoint] = useState([0, 0]);
   const [goalPoint, setGoalPoint] = useState([gridSize - 1, gridSize - 1]);
   const [isRunning, setIsRunning] = useState(false);
-  const [speed, setSpeed] = useState(50); 
+  const [speed, setSpeed] = useState(50);
   const isSearching = useRef(false);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState('A*');
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState("A*");
+  const [timeTaken, setTimeTaken] = useState(0);
 
   const resetAlgorithm = () => {
     setPath([]);
@@ -51,16 +53,18 @@ const PathVisualizer = () => {
         !(x === startPoint[0] && y === startPoint[1]) &&
         !(x === goalPoint[0] && y === goalPoint[1])
       ) {
-        setObstaclePositions((prev) => new Set([...prev, obstacleKey]));
+        setObstaclePositions((prev) => {
+          const newSet = new Set([...prev, obstacleKey]);
+          setObstacleCount(newSet.size);
+          return newSet;
+        });
       }
     }
   };
 
-
   return (
     <>
-      <div
-      >
+      <div>
         <button
           className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
             selectedAlgorithm === "A*" ? "bg-green-700" : ""
@@ -159,7 +163,8 @@ const PathVisualizer = () => {
               setIsRunning,
               directions,
               obstaclePositions,
-              speed
+              speed,
+              setTimeTaken,
             });
           }}
         >
@@ -178,16 +183,28 @@ const PathVisualizer = () => {
           Reset Grid
         </button>
         {/* Slider to control speed */}
-      <div className="flex flex-col text-center">
-        <label style={{ marginRight: "10px" }}>Speed: {speed} ms</label>
-        <input
-          type="range"
-          min="1"
-          max="300"
-          value={speed}
-          onChange={(e) => setSpeed(Number(e.target.value))}
-        />
+        <div className="flex flex-col text-center">
+          <label style={{ marginRight: "10px" }}>Speed: {speed} ms</label>
+          <input
+            type="range"
+            min="1"
+            max="300"
+            value={speed}
+            onChange={(e) => setSpeed(Number(e.target.value))}
+          />
+        </div>
       </div>
+      <div className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded m-2 z-10 flex flex-col gap-3">
+        <span>No. of Obstacles: {obstacleCount}</span>
+        <span>
+          No. of nodes visited:{" "}
+          {visitedCells?.length != null ? visitedCells?.length : 0}
+        </span>
+        <span>
+          Path Length:{" "}
+          {path?.length != null ? path?.length : 0}
+        </span>
+        <span>Time taken: {timeTaken} ms</span>
       </div>
       <Canvas camera={{ position: [0, 5, 10], fov: 70 }}>
         <color attach="background" args={["#bbbbbb"]} />

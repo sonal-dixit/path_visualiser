@@ -2,7 +2,7 @@ import PriorityQueue from "js-priority-queue";
 
 const heuristic = (a, b) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
 
-const aStarPathfinding = ({
+const aStarPathfinding = async ({
   startPoint,
   goalPoint,
   gridSize,
@@ -13,8 +13,10 @@ const aStarPathfinding = ({
   setIsRunning,
   directions,
   obstaclePositions,
-  speed
+  speed,
+  setTimeTaken,
 }) => {
+  const startTime = Date.now();
   const openSetQueue = new PriorityQueue({ comparator: (a, b) => a.f - b.f });
   openSetQueue.queue({
     pos: startPoint,
@@ -79,12 +81,13 @@ const aStarPathfinding = ({
 
     // Delay between steps for animation
     await new Promise(resolve => setTimeout(resolve, speed));
-    searchStep();
+    await searchStep();
 
   };
 
   isSearching.current = true;
-  searchStep();
+  await searchStep();
+  setTimeTaken(Date.now() - startTime);
 };
 
 export default aStarPathfinding;
