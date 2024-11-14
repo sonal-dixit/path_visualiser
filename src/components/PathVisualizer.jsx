@@ -17,16 +17,19 @@ const PathVisualizer = () => {
   const [path, setPath] = useState([]);
   const [visitedCells, setVisitedCells] = useState([]);
   const [obstaclePositions, setObstaclePositions] = useState(new Set());
+  const [dynamicObstacles, setDynamicObstacles] = useState(new Set());
   const [startPoint, setStartPoint] = useState([0, 0]);
   const [goalPoint, setGoalPoint] = useState([gridSize - 1, gridSize - 1]);
   const [isRunning, setIsRunning] = useState(false);
   const [isAddingObstacles, setIsAddingObstacles] = useState(false);
+  const [isAddingDynamicObstacles, setIsAddingDynamicObstacles] = useState(false);
   const isSearching = useRef(false);
 
   const resetGrid = () => {
     setPath([]);
     setVisitedCells([]);
     setObstaclePositions(new Set());
+    setDynamicObstacles(new Set());
     setStartPoint([0, 0]);
     setGoalPoint([gridSize - 1, gridSize - 1]);
     setIsRunning(false);
@@ -35,7 +38,7 @@ const PathVisualizer = () => {
 
   const toggleAddObstacles = () => {
     if (isAddingObstacles) {
-      setIsAddingObstacles(false); // Stop adding obstacles
+      setIsAddingObstacles(false);
     } else {
       for (let i = 0; i < 10; i++) {
         const x = Math.floor(Math.random() * gridSize);
@@ -51,6 +54,10 @@ const PathVisualizer = () => {
       }
       setIsAddingObstacles(true);
     }
+  };
+
+  const toggleAddDynamicObstacles = () => {
+    setIsAddingDynamicObstacles(!isAddingDynamicObstacles);
   };
 
   const aStarPathfinding = () => {
@@ -70,7 +77,7 @@ const PathVisualizer = () => {
       closedSet.add(current.toString());
       visited.push(current);
 
-      setVisitedCells([...visited]);  // Update visited cells in real-time
+      setVisitedCells([...visited]);
 
       if (current.toString() === goalPoint.toString()) {
         const path = [];
@@ -88,6 +95,11 @@ const PathVisualizer = () => {
       for (const [dx, dy] of directions) {
         const neighbor = [x + dx, y + dy];
         const neighborKey = neighbor.toString();
+
+        // Check for dynamic obstacles
+        if (isAddingDynamicObstacles && dynamicObstacles.has(neighborKey)) {
+          continue; // Skip this neighbor if it's a dynamic obstacle
+        }
 
         if (
           neighbor[0] < 0 ||
@@ -112,8 +124,17 @@ const PathVisualizer = () => {
         }
       }
 
-      // Delay between steps for animation
-      setTimeout(searchStep, 100); // Adjust delay as desired
+      // Simulate dynamic obstacles appearing during search
+      if (isAddingDynamicObstacles && Math.random() < 0.05) {
+        const randomX = Math.floor(Math.random() * gridSize);
+        const randomY = Math.floor(Math.random() * gridSize);
+        const dynamicObstacleKey = `${randomX},${randomY}`;
+        if (!obstaclePositions.has(dynamicObstacleKey) && !dynamicObstacles.has(dynamicObstacleKey)) {
+          setDynamicObstacles(prev => new Set(prev.add(dynamicObstacleKey)));
+        }
+      }
+
+      setTimeout(searchStep, 100);
     };
 
     isSearching.current = true;
@@ -131,6 +152,9 @@ const PathVisualizer = () => {
         </button>
         <button onClick={toggleAddObstacles}>
           {isAddingObstacles ? 'Stop Adding Obstacles' : 'Add Obstacles'}
+        </button>
+        <button onClick={toggleAddDynamicObstacles}>
+          {isAddingDynamicObstacles ? 'Stop Adding Dynamic Obstacles' : 'Add Dynamic Obstacles'}
         </button>
         <button onClick={() => { setIsRunning(true); aStarPathfinding(); }}>Play</button>
         <button onClick={resetGrid}>Reset</button>
@@ -177,6 +201,17 @@ const PathVisualizer = () => {
             <mesh key={`obstacle-${index}`} position={[x, y, 0]}>
               <boxGeometry args={[cellSize, cellSize, cellSize]} />
               <meshStandardMaterial color="pink" />
+            </mesh>
+          );
+        })}
+
+        {/* Display Dynamic Obstacles */}
+        {Array.from(dynamicObstacles).map((obstacleKey, index) => {
+          const [x, y] = obstacleKey.split(',').map(Number);
+          return (
+            <mesh key={`dynamic-obstacle-${index}`} position={[x, y, 0]}>
+              <boxGeometry args={[cellSize, cellSize, cellSize]} />
+              <meshStandardMaterial color="green" />
             </mesh>
           );
         })}
