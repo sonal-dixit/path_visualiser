@@ -1,4 +1,4 @@
-const bfsPathfinding = ({
+const bfsPathfinding = async({
     startPoint,
     goalPoint,
     gridSize,
@@ -9,8 +9,10 @@ const bfsPathfinding = ({
     setIsRunning,
     directions,
     obstaclePositions,
-    speed
+    speed,
+    setTimeTaken,
   }) => {
+    const startTime = Date.now();
     const queue = [];
     queue.push({ pos: startPoint });
     const cameFrom = new Map();
@@ -65,11 +67,12 @@ const bfsPathfinding = ({
   
       // Delay between steps for animation
       await new Promise(resolve => setTimeout(resolve, speed));
-      searchStep();
+      await searchStep();
     };
   
     isSearching.current = true;
-    searchStep();
+    await searchStep();
+    setTimeTaken(Date.now() - startTime);
   };
   
   export default bfsPathfinding;

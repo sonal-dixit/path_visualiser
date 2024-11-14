@@ -1,6 +1,6 @@
 import PriorityQueue from "js-priority-queue";
 
-const dijkstraPathfinding = ({
+const dijkstraPathfinding = async({
   startPoint,
   goalPoint,
   gridSize,
@@ -11,8 +11,10 @@ const dijkstraPathfinding = ({
   setIsRunning,
   directions,
   obstaclePositions,
-  speed
+  speed,
+  setTimeTaken,
 }) => {
+  const startTime = Date.now();
   const openSetQueue = new PriorityQueue({ comparator: (a, b) => a.g - b.g });
   openSetQueue.queue({
     pos: startPoint,
@@ -77,11 +79,12 @@ const dijkstraPathfinding = ({
 
     // Delay between steps for animation
     await new Promise(resolve => setTimeout(resolve, speed));
-    searchStep();
+    await searchStep();
   };
 
   isSearching.current = true;
-  searchStep();
+  await searchStep();
+  setTimeTaken(Date.now() - startTime);
 };
 
 export default dijkstraPathfinding;

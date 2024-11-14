@@ -1,4 +1,4 @@
-const dfsPathfinding = ({
+const dfsPathfinding = async ({
     startPoint,
     goalPoint,
     gridSize,
@@ -9,8 +9,10 @@ const dfsPathfinding = ({
     setIsRunning,
     directions,
     obstaclePositions,
-    speed
+    speed,
+    setTimeTaken,
   }) => {
+    const startTime = Date.now();
     const stack = [];
     stack.push({ pos: startPoint });
     const cameFrom = new Map();
@@ -65,11 +67,12 @@ const dfsPathfinding = ({
   
       // Delay between steps for animation
       await new Promise(resolve => setTimeout(resolve, speed));
-      searchStep();
+      await searchStep();
     };
   
     isSearching.current = true;
-    searchStep();
+    await searchStep();
+    setTimeTaken(Date.now() - startTime);
   };
   
   export default dfsPathfinding;

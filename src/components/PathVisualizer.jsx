@@ -88,9 +88,9 @@ const PathVisualizer = () => {
         </button>
         <button
           className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
-            selectedAlgorithm === "Dijkstra's" ? "bg-green-700" : ""
+            selectedAlgorithm === "Dijkstras" ? "bg-green-700" : ""
           }`}
-          onClick={() => setSelectedAlgorithm("Dijkstras")}
+          onClick={() => setSelectedAlgorithm("Dijkstra's")}
         >
           Dijkstra's
         </button>
@@ -184,7 +184,7 @@ const PathVisualizer = () => {
             // Check the selectedAlgorithm state instead of setSelectedAlgorithm function
             if (selectedAlgorithm === "A*") {
               aStarPathfinding(algorithmParameters);
-            } else if (selectedAlgorithm === "Dijkstras") {
+            } else if (selectedAlgorithm === "Dijkstra's") {
               dijkstraPathfinding(algorithmParameters);
             } else if (selectedAlgorithm === "BFS") {
               bfsPathfinding(algorithmParameters);
@@ -225,6 +225,7 @@ const PathVisualizer = () => {
         </div>
       </div>
       <div className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded m-2 z-10 flex flex-col gap-3">
+        <div className="bg-gray-700 text-xl text-center">{selectedAlgorithm}</div>
         <span>No. of Obstacles: {obstacleCount}</span>
         <span>
           No. of nodes visited:{" "}
@@ -233,11 +234,12 @@ const PathVisualizer = () => {
         <span>Path Length: {path?.length != null ? path?.length : 0}</span>
         <span>Time taken: {timeTaken} ms</span>
       </div>
+
       <Canvas camera={{ position: [0, 5, 10], fov: 70 }}>
         <color attach="background" args={["#bbbbbb"]} />
         <ambientLight intensity={0.5} />
         <OrbitControls />
-        <gridHelper args={[gridSize, gridSize, "#222", "black"]} />
+        <gridHelper args={[gridSize*5 ,gridSize*2, "#222", "black"]} />
 
         {/* Display Start Point */}
         <mesh position={[startPoint[0], startPoint[1], 0]}>

@@ -2,7 +2,7 @@ import PriorityQueue from "js-priority-queue";
 
 const heuristic = (a, b) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
 
-const dStarLitePathfinding = ({
+const dStarLitePathfinding = async({
   startPoint,
   goalPoint,
   gridSize,
@@ -15,6 +15,7 @@ const dStarLitePathfinding = ({
   obstaclePositions,
   speed
 }) => {
+  const startTime = Date.now();
   // Initialize the priority queue
   const queue = new PriorityQueue({ comparator: (a, b) => a.key - b.key });
   const gScore = new Map(); // Cost to reach each node
@@ -125,7 +126,8 @@ const dStarLitePathfinding = ({
   };
 
   isSearching.current = true;
-  computeShortestPath();
+  await computeShortestPath();
+  setTimeTaken(Date.now() - startTime);
 };
 
 export default dStarLitePathfinding;

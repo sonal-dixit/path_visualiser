@@ -1,92 +1,91 @@
-const bellmanFordPathfinding = ({
-    startPoint,
-    goalPoint,
-    gridSize,
-    setPath,
-    setVisitedCells,
-    isSearching,
-    isRunning,
-    setIsRunning,
-    directions,
-    obstaclePositions,
-    speed
-  }) => {
-    const distances = new Map();
-    distances.set(startPoint.toString(), 0);
-    const cameFrom = new Map();
-    const visited = [];
-    const totalCells = gridSize * gridSize;
-  
-    // Initialize distances to all nodes as infinity
-    for (let i = 0; i < gridSize; i++) {
-      for (let j = 0; j < gridSize; j++) {
-        const cellKey = [i, j].toString();
-        if (cellKey !== startPoint.toString()) distances.set(cellKey, Infinity);
+const bellmanFordPathfinding = async ({
+  startPoint,
+  goalPoint,
+  gridSize,
+  setPath,
+  setVisitedCells,
+  isSearching,
+  isRunning,
+  setIsRunning,
+  obstaclePositions,
+  edges,
+  speed,
+  setTimeTaken,
+}) => {
+  const startTime = Date.now();
+  const distances = new Map(); // Map of nodes to distances from start
+  const cameFrom = new Map(); // To track the shortest path
+  const visited = [];
+
+  // Initialize distances and cameFrom map
+  for (let x = 0; x < gridSize; x++) {
+    for (let y = 0; y < gridSize; y++) {
+      const pos = [x, y].toString();
+      distances.set(pos, Infinity);
+      cameFrom.set(pos, null);
+    }
+  }
+  distances.set(startPoint.toString(), 0);
+
+  // Bellman-Ford iterations
+  const totalNodes = gridSize * gridSize;
+  for (let i = 0; i < totalNodes - 1 && isRunning; i++) {
+    let anyUpdate = false; // To check if there's an update in this iteration
+
+    for (const { from, to, weight } of edges) {
+      const fromKey = from.toString();
+      const toKey = to.toString();
+
+      if (
+        distances.get(fromKey) + weight < distances.get(toKey) &&
+        isValidPoint(to, gridSize, obstaclePositions)
+      ) {
+        distances.set(toKey, distances.get(fromKey) + weight);
+        cameFrom.set(toKey, from);
+        visited.push(to);
+        setVisitedCells([...visited]); // Update visited cells for visualization
+        anyUpdate = true;
       }
     }
-  
-    const relaxEdges = async () => {
-      for (let k = 0; k < totalCells - 1; k++) {
-        let hasUpdates = false;
-  
-        for (const [cell, distance] of distances.entries()) {
-          const [x, y] = cell.split(',').map(Number);
-  
-          if (distance === Infinity) continue;
-  
-          for (const [dx, dy] of directions) {
-            const neighbor = [x + dx, y + dy];
-            const neighborKey = neighbor.toString();
-  
-            // Skip out-of-bounds or obstacle cells
-            if (
-              neighbor[0] < 0 ||
-              neighbor[0] >= gridSize ||
-              neighbor[1] < 0 ||
-              neighbor[1] >= gridSize ||
-              obstaclePositions.has(neighborKey)
-            ) {
-              continue;
-            }
-  
-            const newDistance = distance + 1;
-  
-            if (newDistance < (distances.get(neighborKey) || Infinity)) {
-              distances.set(neighborKey, newDistance);
-              cameFrom.set(neighborKey, [x, y]);
-              hasUpdates = true;
-            }
-          }
-        }
-  
-        // Update visited cells in real-time
-        visited.push(...Array.from(distances.keys()).map(key => key.split(',').map(Number)));
-        setVisitedCells([...visited]);
-  
-        // Delay between iterations for animation
-        await new Promise(resolve => setTimeout(resolve, speed));
-  
-        if (!hasUpdates) break; // No changes, so we can stop early
-      }
-  
-      // Reconstruct the path if goal is reachable
-      if (distances.get(goalPoint.toString()) < Infinity) {
-        const path = [];
-        let temp = goalPoint;
-        while (temp) {
-          path.push({ x: temp[0], y: temp[1], z: 0 });
-          temp = cameFrom.get(temp.toString());
-        }
-        setPath(path.reverse());
-      }
-  
-      isSearching.current = false;
-      setIsRunning(false);
-    };
-  
-    isSearching.current = true;
-    relaxEdges();
-  };
-  
-  export default bellmanFordPathfinding;
-  
+
+    // Delay between steps for visualization
+    await new Promise((resolve) => setTimeout(resolve, speed));
+
+    // If no update occurred, break early (optimization)
+    if (!anyUpdate) break;
+  }
+
+  // Check for path to goalPoint
+  if (distances.get(goalPoint.toString()) === Infinity) {
+    console.log("No path found to the goal point.");
+    setIsRunning(false);
+    setTimeTaken(Date.now() - startTime);
+    return;
+  }
+
+  // Trace back the path from goalPoint to startPoint
+  const path = [];
+  let current = goalPoint;
+  while (current) {
+    path.push({ x: current[0], y: current[1], z: 0 });
+    current = cameFrom.get(current.toString());
+  }
+  setPath(path.reverse());
+  isSearching.current = false;
+  setIsRunning(false);
+  setTimeTaken(Date.now() - startTime);
+};
+
+// Helper function to check if a point is within bounds and not an obstacle
+const isValidPoint = (point, gridSize, obstaclePositions) => {
+  const [x, y] = point;
+  return (
+    x >= 0 &&
+    x < gridSize &&
+    y >= 0 &&
+    y < gridSize &&
+    !obstaclePositions.has(point.toString())
+  );
+};
+
+export default bellmanFordPathfinding;
