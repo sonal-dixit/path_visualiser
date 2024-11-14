@@ -13,6 +13,7 @@ const aStarPathfinding = ({
   setIsRunning,
   directions,
   obstaclePositions,
+  speed
 }) => {
   const openSetQueue = new PriorityQueue({ comparator: (a, b) => a.f - b.f });
   openSetQueue.queue({
@@ -26,7 +27,7 @@ const aStarPathfinding = ({
   const closedSet = new Set();
   const visited = [];
 
-  const searchStep = () => {
+  const searchStep = async () => {
     if (openSetQueue.length === 0 || !isRunning) return;
 
     const { pos: current } = openSetQueue.dequeue();
@@ -77,7 +78,9 @@ const aStarPathfinding = ({
     }
 
     // Delay between steps for animation
-    setTimeout(searchStep, 5); // Adjust delay as desired
+    await new Promise(resolve => setTimeout(resolve, speed));
+    searchStep();
+
   };
 
   isSearching.current = true;
