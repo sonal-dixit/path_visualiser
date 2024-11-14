@@ -3,6 +3,11 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import aStarPathfinding from "./AStar";
+import dijkstraPathfinding from "./Dijikstra";
+import dfsPathfinding from "./DFS";
+import bfsPathfinding from "./BFS";
+import bellmanFordPathfinding from "./BellmanFord";
+import dStarLitePathfinding from "./DStar";
 
 const gridSize = 30;
 const cellSize = 1;
@@ -81,7 +86,7 @@ const PathVisualizer = () => {
           className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
             selectedAlgorithm === "Dijkstra's" ? "bg-green-700" : ""
           }`}
-          onClick={() => setSelectedAlgorithm("Dijkstra's")}
+          onClick={() => setSelectedAlgorithm("Dijkstras")}
         >
           Dijkstra's
         </button>
@@ -101,6 +106,15 @@ const PathVisualizer = () => {
         >
           BFS
         </button>
+        <button
+  className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
+    selectedAlgorithm === "D* Lite" ? "bg-green-700" : ""
+  }`}
+  onClick={() => setSelectedAlgorithm("D* Lite")}
+>
+  D* Lite
+</button>
+
         <button
           className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
             selectedAlgorithm === "Optimized Algorithm" ? "bg-green-700" : ""
@@ -145,26 +159,43 @@ const PathVisualizer = () => {
           Add Obstacles
         </button>
         <button
-          className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded m-2"
-          onClick={() => {
-            setIsRunning(true);
-            aStarPathfinding({
-              startPoint,
-              goalPoint,
-              gridSize,
-              setPath,
-              setVisitedCells,
-              isSearching,
-              isRunning,
-              setIsRunning,
-              directions,
-              obstaclePositions,
-              speed
-            });
-          }}
-        >
-          Play
-        </button>
+  className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded m-2"
+  onClick={() => {
+    setIsRunning(true);
+    const algorithmParameters = {
+      startPoint,
+      goalPoint,
+      gridSize,
+      setPath,
+      setVisitedCells,
+      isSearching,
+      isRunning,
+      setIsRunning,
+      directions,
+      obstaclePositions,
+      speed
+    };
+
+    // Check the selectedAlgorithm state instead of setSelectedAlgorithm function
+    if (selectedAlgorithm === "A*") {
+      aStarPathfinding(algorithmParameters);
+    } else if (selectedAlgorithm === "Dijkstras") {
+      dijkstraPathfinding(algorithmParameters);
+    } else if (selectedAlgorithm === "BFS") {
+      bfsPathfinding(algorithmParameters);
+    } else if (selectedAlgorithm === "DFS") {
+      dfsPathfinding(algorithmParameters);
+    } else if (selectedAlgorithm === "Bellman-Ford") {
+      bellmanFordPathfinding(algorithmParameters);
+    } else if (selectedAlgorithm === "D* Lite") {
+      dStarLitePathfinding(algorithmParameters);
+    }
+    
+  }}
+>
+  Play
+</button>
+
         <button
           className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded m-2"
           onClick={resetAlgorithm}
