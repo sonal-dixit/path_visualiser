@@ -13,10 +13,20 @@ import hybridPathfinding from "./hybrid";
 const gridSize = 30;
 const cellSize = 1;
 const directions = [
-  [0, 1],
-  [1, 0],
-  [0, -1],
-  [-1, 0],
+  [0, 1, 0],
+  [1, 0, 0],
+  [0, -1, 0],
+  [-1, 0, 0],
+  [0, 0, 1],
+  [0, 0, -1],
+  [1, 1, 1],
+  [-1, -1, -1],
+  [1, -1, 0],
+  [-1, 1, 0],
+  [1, 0, 1],
+  [-1, 0, -1],
+  [0, 1, -1],
+  [0, -1, 1],
 ];
 
 const PathVisualizer = () => {
@@ -24,8 +34,12 @@ const PathVisualizer = () => {
   const [visitedCells, setVisitedCells] = useState([]);
   const [obstaclePositions, setObstaclePositions] = useState(new Set());
   const [obstacleCount, setObstacleCount] = useState(0);
-  const [startPoint, setStartPoint] = useState([0, 0]);
-  const [goalPoint, setGoalPoint] = useState([gridSize - 1, gridSize - 1]);
+  const [startPoint, setStartPoint] = useState([0, 0, 0]);
+  const [goalPoint, setGoalPoint] = useState([
+    gridSize - 1,
+    gridSize - 1,
+    gridSize - 1,
+  ]);
   const [isRunning, setIsRunning] = useState(false);
   const [speed, setSpeed] = useState(50);
   const isSearching = useRef(false);
@@ -43,9 +57,10 @@ const PathVisualizer = () => {
     setPath([]);
     setVisitedCells([]);
     setObstaclePositions(new Set());
-    setStartPoint([0, 0]);
-    setGoalPoint([gridSize - 1, gridSize - 1]);
+    setStartPoint([0, 0, 0]);
+    setGoalPoint([gridSize - 1, gridSize - 1, gridSize - 1]);
     setIsRunning(false);
+    setObstacleCount(0);
     isSearching.current = false;
   };
 
@@ -53,12 +68,14 @@ const PathVisualizer = () => {
     for (let i = 0; i < 20; i++) {
       const x = Math.floor(Math.random() * gridSize);
       const y = Math.floor(Math.random() * gridSize);
-      const obstacleKey = `${x},${y}`;
+      const z = Math.floor(Math.random() * gridSize);
+      const obstacleKey = `${x},${y},${z}`;
       if (
         !obstaclePositions.has(obstacleKey) &&
-        !(x === startPoint[0] && y === startPoint[1]) &&
-        !(x === goalPoint[0] && y === goalPoint[1])
+        !(x === startPoint[0] && y === startPoint[1] && z === startPoint[2]) &&
+        !(x === goalPoint[0] && y === goalPoint[1] && z === goalPoint[2])
       ) {
+        console.log("Adding obstacle at", obstacleKey);
         setObstaclePositions((prev) => {
           const newSet = new Set([...prev, obstacleKey]);
           setObstacleCount(newSet.size);
@@ -246,13 +263,13 @@ const PathVisualizer = () => {
         <gridHelper args={[gridSize * 3, gridSize * 2, "#222", "black"]} />
 
         {/* Display Start Point */}
-        <mesh position={[startPoint[0], startPoint[1], 0]}>
+        <mesh position={[startPoint[0], startPoint[1], startPoint[2]]}>
           <boxGeometry args={[cellSize, cellSize, cellSize]} />
           <meshStandardMaterial color="#00ff00" />
         </mesh>
 
         {/* Display Goal Point */}
-        <mesh position={[goalPoint[0], goalPoint[1], 0]}>
+        <mesh position={[goalPoint[0], goalPoint[1], goalPoint[2]]}>
           <boxGeometry args={[cellSize, cellSize, cellSize]} />
           <meshStandardMaterial color="blue" />
         </mesh>
@@ -261,7 +278,7 @@ const PathVisualizer = () => {
         {visitedCells.map((position, index) => (
           <mesh
             key={`visited-${index}`}
-            position={[position[0], position[1], 0]}
+            position={[position[0], position[1], position[2]]}
           >
             <boxGeometry args={[cellSize, cellSize, cellSize]} />
             <meshStandardMaterial color="lightgray" />
@@ -281,9 +298,9 @@ const PathVisualizer = () => {
 
         {/* Display Obstacles */}
         {Array.from(obstaclePositions).map((obstacleKey, index) => {
-          const [x, y] = obstacleKey.split(",").map(Number);
+          const [x, y, z] = obstacleKey.split(",").map(Number);
           return (
-            <mesh key={`obstacle-${index}`} position={[x, y, 0]}>
+            <mesh key={`obstacle-${index}`} position={[x, y, z]}>
               <boxGeometry args={[cellSize, cellSize, cellSize]} />
               <meshStandardMaterial color="red" />
             </mesh>

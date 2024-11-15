@@ -46,6 +46,7 @@ const PathVisualizer = () => {
     setStartPoint([0, 0]);
     setGoalPoint([gridSize - 1, gridSize - 1]);
     setIsRunning(false);
+    setObstacleCount(0);
     isSearching.current = false;
   };
 
