@@ -2,14 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-import aStarPathfinding from "./AStar";
-import dijkstraPathfinding from "./Dijikstra";
-import dfsPathfinding from "./DFS";
-import bfsPathfinding from "./BFS";
-import bellmanFordPathfinding from "./BellmanFord";
-import dStarLitePathfinding from "./DStar";
-import hybridPathfinding from "./hybrid";
-
+import aStarPathfinding from "./AStar3d";
+import dijkstraPathfinding from "./Dijikstra3d";
+import dfsPathfinding from "./DFS3d";
+import bfsPathfinding from "./BFS3d";
+// import dStarLitePathfinding from "./DStar3d";
+import hybridPathfinding from "./hybrid3d";
 const gridSize = 30;
 const cellSize = 1;
 const directions = [
@@ -19,8 +17,6 @@ const directions = [
   [-1, 0, 0],
   [0, 0, 1],
   [0, 0, -1],
-  [1, 1, 1],
-  [-1, -1, -1],
   [1, -1, 0],
   [-1, 1, 0],
   [1, 0, 1],
@@ -157,6 +153,7 @@ const PathVisualizer = () => {
             setStartPoint([
               Math.floor(Math.random() * gridSize),
               Math.floor(Math.random() * gridSize),
+              Math.floor(Math.random() * gridSize),
             ])
           }
         >
@@ -166,6 +163,7 @@ const PathVisualizer = () => {
           className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded m-2"
           onClick={() =>
             setGoalPoint([
+              Math.floor(Math.random() * gridSize),
               Math.floor(Math.random() * gridSize),
               Math.floor(Math.random() * gridSize),
             ])
@@ -207,8 +205,8 @@ const PathVisualizer = () => {
               bfsPathfinding(algorithmParameters);
             } else if (selectedAlgorithm === "DFS") {
               dfsPathfinding(algorithmParameters);
-            } else if (selectedAlgorithm === "Bellman-Ford") {
-              bellmanFordPathfinding(algorithmParameters);
+            // } else if (selectedAlgorithm === "Bellman-Ford") {
+            //   bellmanFordPathfinding(algorithmParameters);
             } else if (selectedAlgorithm === "D* Lite") {
               dStarLitePathfinding(algorithmParameters);
             } else if (selectedAlgorithm === "Optimised Algorithm") {

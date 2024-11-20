@@ -18,7 +18,7 @@ const directions = [
   [0, -1],
   [-1, 0],
 ];
-
+// reason for removing the diagnol directions is because they will be applicable only when there is obstacle on left and right and that is not suitable
 const PathVisualizer = () => {
   const [path, setPath] = useState([]);
   const [visitedCells, setVisitedCells] = useState([]);
