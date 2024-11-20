@@ -10,7 +10,6 @@ import bellmanFordPathfinding from "./BellmanFord";
 import dStarLitePathfinding from "./DStar";
 import hybridPathfinding from "./hybrid";
 
-const gridSize = 30;
 const cellSize = 1;
 const directions = [
   [0, 1],
@@ -20,6 +19,7 @@ const directions = [
 ];
 // reason for removing the diagnol directions is because they will be applicable only when there is obstacle on left and right and that is not suitable
 const PathVisualizer = () => {
+  const [gridSize, setGridSize] = useState(30);
   const [path, setPath] = useState([]);
   const [visitedCells, setVisitedCells] = useState([]);
   const [obstaclePositions, setObstaclePositions] = useState(new Set());
@@ -31,11 +31,15 @@ const PathVisualizer = () => {
   const isSearching = useRef(false);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("A*");
   const [timeTaken, setTimeTaken] = useState(0);
+  const [showVisitedCells, setShowVisitedCells] = useState(1);
+  const [showObstacles, setShowObstacles] = useState(1);
 
   const resetAlgorithm = () => {
     setPath([]);
     setVisitedCells([]);
     setIsRunning(false);
+    setShowObstacles(1);
+    setShowVisitedCells(1);
     isSearching.current = false;
   };
 
@@ -47,6 +51,8 @@ const PathVisualizer = () => {
     setGoalPoint([gridSize - 1, gridSize - 1]);
     setIsRunning(false);
     setObstacleCount(0);
+    setShowObstacles(1);
+    setShowVisitedCells(1);
     isSearching.current = false;
   };
 
@@ -68,6 +74,10 @@ const PathVisualizer = () => {
       }
     }
   };
+
+  useEffect(() => {
+    resetGrid();
+  }, [gridSize]);
 
   return (
     <>
@@ -215,16 +225,47 @@ const PathVisualizer = () => {
         >
           Reset Grid
         </button>
-        {/* Slider to control speed */}
-        <div className="flex flex-col text-center">
-          <label style={{ marginRight: "10px" }}>Speed: {speed} ms</label>
-          <input
-            type="range"
-            min="1"
-            max="300"
-            value={speed}
-            onChange={(e) => setSpeed(Number(e.target.value))}
-          />
+        <div className="absolute top-12 right-5 flex gap-2">
+          <div classname="flex flex-col gap-4">
+            <div className="flex flex-col text-center">
+              <label>Speed: {speed} ms</label>
+              <input
+                type="range"
+                min="1"
+                max="300"
+                value={speed}
+                onChange={(e) => setSpeed(Number(e.target.value))}
+              />
+            </div>
+            <div className="flex flex-col text-center mt-3">
+              <label>GridSize: {gridSize}</label>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                value={gridSize}
+                onChange={(e) => setGridSize(Number(e.target.value))}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col text-center">
+              <label>Show Visited Cells?</label>
+              <input
+                type="checkbox"
+                defaultChecked={showVisitedCells}
+                onChange={(e) => setShowVisitedCells(e.target.checked)}
+              />
+            </div>
+            <div className="flex flex-col text-center">
+              <label>Show Obstacles?</label>
+              <input
+                type="checkbox"
+                defaultChecked={showObstacles}
+                onChange={(e) => setShowObstacles(e.target.checked)}
+              />
+            </div>
+          </div>
         </div>
       </div>
       <div className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded m-2 z-10 flex flex-col gap-3">
@@ -240,7 +281,7 @@ const PathVisualizer = () => {
         <span>Time taken: {timeTaken} ms</span>
       </div>
 
-      <Canvas camera={{ position: [0, 5, 10], fov: 70 }}>
+      <Canvas camera={{ position: [10, 25, 50] }}>
         <color attach="background" args={["#bbbbbb"]} />
         <ambientLight intensity={0.5} />
         <OrbitControls />
@@ -259,15 +300,28 @@ const PathVisualizer = () => {
         </mesh>
 
         {/* Display Visited Cells */}
-        {visitedCells.map((position, index) => (
-          <mesh
-            key={`visited-${index}`}
-            position={[position[0], position[1], 0]}
-          >
-            <boxGeometry args={[cellSize, cellSize, cellSize]} />
-            <meshStandardMaterial color="lightgray" />
-          </mesh>
-        ))}
+        {showVisitedCells && (
+          <>
+            {visitedCells.map((position, index) => (
+              <mesh
+                key={`visited-${index}`}
+                position={[position[0], position[1], 0]}
+              >
+                <boxGeometry args={[cellSize, cellSize, cellSize]} />
+                <meshStandardMaterial color="lightgray" />
+              </mesh>
+            ))}
+            {path.map((position, index) => (
+              <mesh
+                key={`path-${index}`}
+                position={[position.x, position.y, position.z]}
+              >
+                <boxGeometry args={[cellSize, cellSize, cellSize]} />
+                <meshStandardMaterial color="yellow" />
+              </mesh>
+            ))}
+          </>
+        )}
 
         {/* Display Final Path */}
         {path.map((position, index) => (
@@ -281,15 +335,19 @@ const PathVisualizer = () => {
         ))}
 
         {/* Display Obstacles */}
-        {Array.from(obstaclePositions).map((obstacleKey, index) => {
-          const [x, y] = obstacleKey.split(",").map(Number);
-          return (
-            <mesh key={`obstacle-${index}`} position={[x, y, 0]}>
-              <boxGeometry args={[cellSize, cellSize, cellSize]} />
-              <meshStandardMaterial color="red" />
-            </mesh>
-          );
-        })}
+        {showObstacles && (
+          <>
+            {Array.from(obstaclePositions).map((obstacleKey, index) => {
+              const [x, y] = obstacleKey.split(",").map(Number);
+              return (
+                <mesh key={`obstacle-${index}`} position={[x, y, 0]}>
+                  <boxGeometry args={[cellSize, cellSize, cellSize]} />
+                  <meshStandardMaterial color="red" />
+                </mesh>
+              );
+            })}
+          </>
+        )}
       </Canvas>
     </>
   );
