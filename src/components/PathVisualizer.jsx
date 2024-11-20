@@ -58,8 +58,8 @@ const PathVisualizer = () => {
 
   const toggleAddObstacles = () => {
     for (let i = 0; i < 20; i++) {
-      const x = Math.floor(Math.random() * gridSize);
-      const y = Math.floor(Math.random() * gridSize);
+      const x = Math.floor(Math.random() * (gridSize + 8));
+      const y = Math.floor(Math.random() * (gridSize + 8));
       const obstacleKey = `${x},${y}`;
       if (
         !obstaclePositions.has(obstacleKey) &&
@@ -285,7 +285,7 @@ const PathVisualizer = () => {
         <color attach="background" args={["#bbbbbb"]} />
         <ambientLight intensity={0.5} />
         <OrbitControls />
-        <gridHelper args={[gridSize * 3, gridSize * 2, "#222", "black"]} />
+        <gridHelper args={[gridSize * 2, gridSize, "#222", "black"]} />
 
         {/* Display Start Point */}
         <mesh position={[startPoint[0], startPoint[1], 0]}>

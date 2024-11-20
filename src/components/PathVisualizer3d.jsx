@@ -68,9 +68,9 @@ const PathVisualizer = () => {
 
   const toggleAddObstacles = () => {
     for (let i = 0; i < 20; i++) {
-      const x = Math.floor(Math.random() * gridSize);
-      const y = Math.floor(Math.random() * gridSize);
-      const z = Math.floor(Math.random() * gridSize);
+      const x = Math.floor(Math.random() * (gridSize + 8));
+      const y = Math.floor(Math.random() * (gridSize + 8));
+      const z = Math.floor(Math.random() * (gridSize + 8));
       const obstacleKey = `${x},${y},${z}`;
       if (
         !obstaclePositions.has(obstacleKey) &&
