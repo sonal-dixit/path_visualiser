@@ -2,7 +2,7 @@ import PriorityQueue from "js-priority-queue";
 
 const heuristic = (a, b) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
 
-const dStarLitePathfinding = async ({
+const dStarLitePathfindingOptimised = async ({
   startPoint,
   goalPoint,
   gridSize,
@@ -11,13 +11,27 @@ const dStarLitePathfinding = async ({
   isSearching,
   isRunning,
   setIsRunning,
-  directions,
   obstaclePositions,
   speed,
   setTimeTaken,
 }) => {
-  const startTime = Date.now();
+  const getDynamicDirections = (startPoint, goalPoint) => {
+    const dx = goalPoint[0] - startPoint[0]; // X-axis difference
+    const dy = goalPoint[1] - startPoint[1]; // Y-axis difference
+    
+    // Prioritize directions based on the goal's relative position
+    const directions = [];
+    if (dx > 0) directions.push([1, 0]); // Move down
+    if (dx < 0) directions.push([-1, 0]); // Move up
+    if (dy > 0) directions.push([0, 1]); // Move right
+    if (dy < 0) directions.push([0, -1]); // Move left
+    
+    return directions;
+  };
 
+  const directions = getDynamicDirections(startPoint, goalPoint);
+  const startTime = Date.now();
+  
   const openSetQueue = new PriorityQueue({
     comparator: (a, b) => a.key - b.key,
   });
@@ -138,4 +152,4 @@ const dStarLitePathfinding = async ({
   setTimeTaken(Date.now() - startTime);
 };
 
-export default dStarLitePathfinding;
+export default dStarLitePathfindingOptimised;

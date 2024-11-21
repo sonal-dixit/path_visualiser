@@ -6,7 +6,7 @@ import aStarPathfinding from "./AStar3d";
 import dijkstraPathfinding from "./Dijikstra3d";
 import dfsPathfinding from "./DFS3d";
 import bfsPathfinding from "./BFS3d";
-// import dStarLitePathfinding from "./DStar3d";
+import dStarLitePathfinding from "./DStar3d";
 import hybridPathfinding from "./hybrid3d";
 const cellSize = 1;
 const directions = [
@@ -144,11 +144,11 @@ const PathVisualizer = () => {
         </button>
         <button
           className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
-            selectedAlgorithm === "Optimised Algorithm" ? "bg-green-700" : ""
+            selectedAlgorithm === "A* + PFM" ? "bg-green-700" : ""
           }`}
-          onClick={() => setSelectedAlgorithm("Optimised Algorithm")}
+          onClick={() => setSelectedAlgorithm("A* + PFM")}
         >
-          Optimised Algorithm
+          A* + PFM
         </button>
       </div>
       <div
@@ -219,7 +219,7 @@ const PathVisualizer = () => {
               //   bellmanFordPathfinding(algorithmParameters);
             } else if (selectedAlgorithm === "D* Lite") {
               dStarLitePathfinding(algorithmParameters);
-            } else if (selectedAlgorithm === "Optimised Algorithm") {
+            } else if (selectedAlgorithm === "A* + PFM") {
               hybridPathfinding(algorithmParameters);
             }
           }}

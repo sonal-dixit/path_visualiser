@@ -8,7 +8,9 @@ import dfsPathfinding from "./DFS";
 import bfsPathfinding from "./BFS";
 import bellmanFordPathfinding from "./BellmanFord";
 import dStarLitePathfinding from "./DStar";
+import dStarLitePathfindingOptimised from "./DStarOptimised";
 import hybridPathfinding from "./hybrid";
+import hybridPathfindingOptimised from "./hybridOptimised";
 
 const cellSize = 1;
 const directions = [
@@ -58,8 +60,8 @@ const PathVisualizer = () => {
 
   const toggleAddObstacles = () => {
     for (let i = 0; i < 20; i++) {
-      const x = Math.floor(Math.random() * (gridSize + 8));
-      const y = Math.floor(Math.random() * (gridSize + 8));
+      const x = Math.floor(Math.random() * gridSize);
+      const y = Math.floor(Math.random() * gridSize);
       const obstacleKey = `${x},${y}`;
       if (
         !obstaclePositions.has(obstacleKey) &&
@@ -132,11 +134,27 @@ const PathVisualizer = () => {
         </button>
         <button
           className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
-            selectedAlgorithm === "Optimised Algorithm" ? "bg-green-700" : ""
+            selectedAlgorithm === "D* Lite Optimised" ? "bg-green-700" : ""
           }`}
-          onClick={() => setSelectedAlgorithm("Optimised Algorithm")}
+          onClick={() => setSelectedAlgorithm("D* Lite Optimised")}
         >
-          Optimised Algorithm
+          D* Lite Optimised
+        </button>
+        <button
+          className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
+            selectedAlgorithm === "A* + PFM" ? "bg-green-700" : ""
+          }`}
+          onClick={() => setSelectedAlgorithm("A* + PFM")}
+        >
+          A* + PFM
+        </button>
+        <button
+          className={`bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded m-2 ${
+            selectedAlgorithm === "A* + PFM Optimised" ? "bg-green-700" : ""
+          }`}
+          onClick={() => setSelectedAlgorithm("A* + PFM Optimised")}
+        >
+          A* + PFM Optimised
         </button>
       </div>
       <div
@@ -205,8 +223,12 @@ const PathVisualizer = () => {
               bellmanFordPathfinding(algorithmParameters);
             } else if (selectedAlgorithm === "D* Lite") {
               dStarLitePathfinding(algorithmParameters);
-            } else if (selectedAlgorithm === "Optimised Algorithm") {
+            } else if (selectedAlgorithm === "D* Lite Optimised") {
+              dStarLitePathfindingOptimised(algorithmParameters);
+            } else if (selectedAlgorithm === "A* + PFM") {
               hybridPathfinding(algorithmParameters);
+            } else if (selectedAlgorithm === "A* + PFM Optimised") {
+              hybridPathfindingOptimised(algorithmParameters);
             }
           }}
         >
@@ -225,7 +247,7 @@ const PathVisualizer = () => {
         >
           Reset Grid
         </button>
-        <div className="absolute top-12 right-5 flex gap-2">
+        <div className="absolute top-12 right-2 flex gap-2">
           <div classname="flex flex-col gap-4">
             <div className="flex flex-col text-center">
               <label>Speed: {speed} ms</label>
